@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class LogActivity
 {
     /**
      * Handle an incoming request.
@@ -15,9 +15,15 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-         if (!auth()->check() || !auth()->user()->isAdmin()) {
-            abort(403, 'Accès non autorisé');
+         $response = $next($request);
+
+        if (auth()->check()) {
+            LogActivite::create([
+                'user_id' => auth()->id(),
+                'action' => $request->method() . ' ' . $request->path(),
+                'description' => 'IP: ' . $request->ip()
+            ]);
         }
-        return $next($request);
+        return $response;
     }
 }
