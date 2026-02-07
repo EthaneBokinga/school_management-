@@ -6,23 +6,29 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
-        return view('home');
+        $user = auth()->user();
+
+        // Redirection selon le rôle
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($user->isProf()) {
+            return redirect()->route('prof.dashboard');
+        }
+
+        if ($user->isEleve()) {
+            return redirect()->route('eleve.dashboard');
+        }
+
+        // Si aucun rôle reconnu
+        abort(403, 'Rôle non reconnu');
     }
 }
