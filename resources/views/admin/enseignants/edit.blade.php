@@ -1,0 +1,82 @@
+@extends('layouts.app')
+
+@section('title', 'Modifier Enseignant')
+@section('page-title', 'Modifier l\'Enseignant')
+
+@section('content')
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-edit me-2"></i>Formulaire de Modification
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('admin.enseignants.update', $enseignant->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('nom') is-invalid @enderror" 
+                                       id="nom" name="nom" value="{{ old('nom', $enseignant->nom) }}" required>
+                                @error('nom')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('prenom') is-invalid @enderror" 
+                                       id="prenom" name="prenom" value="{{ old('prenom', $enseignant->prenom) }}" required>
+                                @error('prenom')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                                   id="email" name="email" value="{{ old('email', $enseignant->email) }}" required>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="specialite" class="form-label">Spécialité <span class="text-danger">*</span></label>
+                            <select class="form-select @error('specialite') is-invalid @enderror" id="specialite" name="specialite" required>
+                                <option value="">-- Sélectionner --</option>
+                                <option value="Mathématiques" {{ old('specialite', $enseignant->specialite) == 'Mathématiques' ? 'selected' : '' }}>Mathématiques</option>
+                                <option value="Français" {{ old('specialite', $enseignant->specialite) == 'Français' ? 'selected' : '' }}>Français</option>
+                                <option value="Anglais" {{ old('specialite', $enseignant->specialite) == 'Anglais' ? 'selected' : '' }}>Anglais</option>
+                                <option value="Physique-Chimie" {{ old('specialite', $enseignant->specialite) == 'Physique-Chimie' ? 'selected' : '' }}>Physique-Chimie</option>
+                                <option value="SVT" {{ old('specialite', $enseignant->specialite) == 'SVT' ? 'selected' : '' }}>SVT</option>
+                                <option value="Histoire-Géographie" {{ old('specialite', $enseignant->specialite) == 'Histoire-Géographie' ? 'selected' : '' }}>Histoire-Géographie</option>
+                                <option value="Philosophie" {{ old('specialite', $enseignant->specialite) == 'Philosophie' ? 'selected' : '' }}>Philosophie</option>
+                                <option value="EPS" {{ old('specialite', $enseignant->specialite) == 'EPS' ? 'selected' : '' }}>EPS</option>
+                                <option value="Informatique" {{ old('specialite', $enseignant->specialite) == 'Informatique' ? 'selected' : '' }}>Informatique</option>
+                                <option value="Arts Plastiques" {{ old('specialite', $enseignant->specialite) == 'Arts Plastiques' ? 'selected' : '' }}>Arts Plastiques</option>
+                            </select>
+                            @error('specialite')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ route('admin.enseignants.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Retour
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Mettre à jour
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

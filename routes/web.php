@@ -20,12 +20,19 @@ use App\Http\Controllers\Eleve\NoteController as EleveNoteController;
 use App\Http\Controllers\Eleve\EmploiDuTempsController;
 use App\Http\Controllers\NotificationController;
 
-// Page d'accueil : redirige vers login si non connecté, sinon vers /home
+// Page d'accueil : afficher la vue publique `welcome`
+// Si vous souhaitez revenir à l'ancien comportement (rediriger vers /home si connecté,
+// sinon vers /login), décommentez le bloc ci-dessous et commentez la route qui retourne la vue.
+/*
 Route::get('/', function () {
     if (auth()->check()) {
         return redirect('/home');
     }
     return redirect('/login');
+});
+*/
+Route::get('/', function () {
+    return view('welcome');
 });
 
 // Authentication Routes
