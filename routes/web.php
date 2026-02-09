@@ -20,9 +20,12 @@ use App\Http\Controllers\Eleve\NoteController as EleveNoteController;
 use App\Http\Controllers\Eleve\EmploiDuTempsController;
 use App\Http\Controllers\NotificationController;
 
-// Page d'accueil
+// Page d'accueil : redirige vers login si non connecté, sinon vers /home
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->check()) {
+        return redirect('/home');
+    }
+    return redirect('/login');
 });
 
 // Authentication Routes

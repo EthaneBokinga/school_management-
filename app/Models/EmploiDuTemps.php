@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class EmploiDuTemps extends Model
 {
-     use HasFactory;
+    use HasFactory;
 
     protected $table = 'emplois_du_temps';
 
@@ -16,11 +17,6 @@ class EmploiDuTemps extends Model
         'jour_semaine',
         'heure_debut',
         'heure_fin'
-    ];
-
-    protected $casts = [
-        'heure_debut' => 'datetime:H:i',
-        'heure_fin' => 'datetime:H:i'
     ];
 
     // Relations
