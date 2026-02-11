@@ -27,51 +27,47 @@ class EnseignantController extends Controller
     {
         return view('admin.enseignants.create');
     }
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'nom' => 'required|string|max:50',
+        'prenom' => 'required|string|max:50',
+        'email' => 'required|email|unique:enseignants',
+        'specialite' => 'required|string|max:100',
+        'autre_specialite' => 'nullable|string|max:100',
+        'create_account' => 'nullable|boolean'
+    ]);
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nom' => 'required|string|max:50',
-            'prenom' => 'required|string|max:50',
-            'specialite' => 'required|string|max:100',
-            'email' => 'required|email|unique:enseignants',
-            'create_account' => 'nullable|boolean'
-        ]);
-
-        DB::beginTransaction();
-        
-        try {
-            $enseignant = Enseignant::create([
-                'nom' => $validated['nom'],
-                'prenom' => $validated['prenom'],
-                'specialite' => $validated['specialite'],
-                'email' => $validated['email']
-            ]);
-
-            // Créer un compte utilisateur si demandé
-            if ($request->has('create_account') && $request->create_account) {
-                $roleProf = Role::where('nom_role', 'Prof')->first();
-                
-                User::create([
-                    'name' => $enseignant->nom_complet,
-                    'email' => $validated['email'],
-                    'password' => Hash::make('password'),
-                    'role_id' => $roleProf->id,
-                    'reference_id' => $enseignant->id
-                ]);
-            }
-
-            DB::commit();
-
-            return redirect()->route('admin.enseignants.index')
-                ->with('success', 'Enseignant créé avec succès');
-                
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Erreur lors de la création: ' . $e->getMessage())
-                ->withInput();
-        }
+    // Si "Autre" est sélectionné, utiliser le champ "autre_specialite"
+    if ($validated['specialite'] === 'Autre' && !empty($validated['autre_specialite'])) {
+        $validated['specialite'] = $validated['autre_specialite'];
     }
+
+    unset($validated['autre_specialite']);
+
+    $enseignant = Enseignant::create([
+        'nom' => $validated['nom'],
+        'prenom' => $validated['prenom'],
+        'email' => $validated['email'],
+        'specialite' => $validated['specialite']
+    ]);
+
+    // Création du compte utilisateur si demandé
+    if ($request->create_account) {
+        $role = \App\Models\Role::where('nom_role', 'Prof')->first();
+        
+        User::create([
+            'name' => $enseignant->nom_complet,
+            'email' => $enseignant->email,
+            'password' => bcrypt('password'),
+            'role_id' => $role->id,
+            'reference_id' => $enseignant->id
+        ]);
+    }
+
+    return redirect()->route('admin.enseignants.index')
+        ->with('success', 'Enseignant créé avec succès');
+}
 
     public function show(string $id)
     {

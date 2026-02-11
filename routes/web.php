@@ -74,6 +74,11 @@ Route::middleware(['auth', 'admin', 'log.activity'])->prefix('admin')->name('adm
     // Gestion des absences
     Route::resource('absences', AdminAbsenceController::class);
     Route::get('absences/classe/{classe_id}', [AdminAbsenceController::class, 'parClasse'])->name('absences.classe');
+
+     // Échéances de paiement
+    Route::resource('echeances', EcheanceController::class);
+    Route::post('echeances/generer/{inscription}', [EcheanceController::class, 'genererAuto'])->name('echeances.generer');
+    Route::post('echeances/{echeance}/payer', [EcheanceController::class, 'marquerPaye'])->name('echeances.payer');
 });
 
 // Routes Professeur
@@ -94,10 +99,27 @@ Route::middleware(['auth', 'prof', 'log.activity'])->prefix('prof')->name('prof.
     // Gestion des absences
     Route::get('/absences', [ProfAbsenceController::class, 'index'])->name('absences.index');
     Route::post('/absences', [ProfAbsenceController::class, 'store'])->name('absences.store');
+    // Emploi du temps
+    Route::get('/emploi-du-temps', [App\Http\Controllers\Prof\EmploiController::class, 'index'])->name('emploi.index');
+
+    // Ressources pédagogiques
+    Route::resource('ressources', RessourceController::class)->except(['show', 'edit', 'update']);
+     // Devoirs
+    Route::resource('devoirs', DevoirController::class);
+
+    // Examens
+    Route::resource('examens', ExamenController::class)->except(['show']);
 });
 
 // Routes Élève
 Route::middleware(['auth', 'eleve', 'log.activity'])->prefix('eleve')->name('eleve.')->group(function () {
+     // Sélection année (DOIT ÊTRE AVANT dashboard)
+    Route::get('/selection-annee', [SelectionAnneeController::class, 'index'])->name('selection-annee');
+    Route::post('/selectionner-annee', [SelectionAnneeController::class, 'selectionner'])->name('selectionner-annee');
+    
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
     Route::get('/dashboard', [EleveDashboard::class, 'index'])->name('dashboard');
     
     // Mes notes
@@ -113,4 +135,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/marquer-lu', [NotificationController::class, 'marquerLu'])->name('notifications.marquer-lu');
     Route::get('/notifications/count', [NotificationController::class, 'count'])->name('notifications.count');
+    // Ressources / Cours
+    Route::get('/cours', [App\Http\Controllers\Eleve\RessourceController::class, 'index'])->name('ressources.index');
+
+     // Absences
+    Route::get('/absences', [App\Http\Controllers\Eleve\AbsenceController::class, 'index'])->name('absences.index');
+    Route::get('/absences/{absence}/justifier', [App\Http\Controllers\Eleve\AbsenceController::class, 'justifier'])->name('absences.justifier');
+    Route::post('/absences/{absence}/justification', [App\Http\Controllers\Eleve\AbsenceController::class, 'storeJustification'])->name('absences.store-justification');
+
 });

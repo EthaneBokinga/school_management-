@@ -15,7 +15,8 @@ class AnneeScolaire extends Model
         'libelle',
         'date_debut',
         'date_fin',
-        'est_active'
+        'est_active',
+         'statut' 
     ];
 
     protected $casts = [

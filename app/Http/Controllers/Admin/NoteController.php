@@ -7,11 +7,9 @@ use App\Models\Note;
 use App\Models\Inscription;
 use App\Models\Cours;
 use App\Models\TypeExamen;
-use App\Models\Classe;
 use App\Models\AnneeScolaire;
-use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Helpers\NotificationHelper;
 
 class NoteController extends Controller
 {
@@ -19,17 +17,12 @@ class NoteController extends Controller
     {
         $anneeActive = AnneeScolaire::where('est_active', true)->first();
         
-        $notes = Note::with([
-            'inscription.etudiant',
-            'inscription.classe',
-            'cours.matiere',
-            'typeExamen'
-        ])
-        ->whereHas('inscription', function($q) use ($anneeActive) {
-            $q->where('annee_id', $anneeActive->id);
-        })
-        ->latest('date_saisie')
-        ->paginate(20);
+        $notes = Note::with(['inscription.etudiant', 'inscription.classe', 'cours.matiere', 'typeExamen'])
+            ->whereHas('inscription', function($query) use ($anneeActive) {
+                $query->where('annee_id', $anneeActive->id);
+            })
+            ->orderBy('date_saisie', 'desc')
+            ->paginate(20);
         
         return view('admin.notes.index', compact('notes', 'anneeActive'));
     }
@@ -37,122 +30,103 @@ class NoteController extends Controller
     public function create()
     {
         $anneeActive = AnneeScolaire::where('est_active', true)->first();
-        
-        $inscriptions = Inscription::with(['etudiant', 'classe'])
+        $cours = Cours::with(['matiere', 'classe', 'enseignant'])
             ->where('annee_id', $anneeActive->id)
             ->get();
-        
-        $cours = Cours::with(['matiere', 'classe'])
-            ->where('annee_id', $anneeActive->id)
-            ->get();
-        
         $typesExamens = TypeExamen::all();
         
-        return view('admin.notes.create', compact('inscriptions', 'cours', 'typesExamens'));
+        return view('admin.notes.create', compact('cours', 'typesExamens', 'anneeActive'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'inscription_id' => 'required|exists:inscriptions,id',
             'cours_id' => 'required|exists:cours,id',
             'type_examen_id' => 'required|exists:types_examens,id',
-            'valeur_note' => 'required|numeric|min:0|max:20'
+            'notes' => 'required|array',
+            'notes.*.inscription_id' => 'required|exists:inscriptions,id',
+            'notes.*.valeur_note' => 'nullable|numeric|min:0|max:20'
         ]);
 
-        DB::beginTransaction();
-        
-        try {
-            $note = Note::create([
-                'inscription_id' => $validated['inscription_id'],
-                'cours_id' => $validated['cours_id'],
-                'type_examen_id' => $validated['type_examen_id'],
-                'valeur_note' => $validated['valeur_note'],
-                'date_saisie' => now()
-            ]);
+        $count = 0;
+        foreach ($request->notes as $noteData) {
+            if (!empty($noteData['valeur_note'])) {
+                $note = Note::create([
+                    'inscription_id' => $noteData['inscription_id'],
+                    'cours_id' => $request->cours_id,
+                    'type_examen_id' => $request->type_examen_id,
+                    'valeur_note' => $noteData['valeur_note'],
+                    'date_saisie' => now()
+                ]);
 
-            // Envoyer notification à l'étudiant
-            $inscription = Inscription::with('etudiant.user', 'classe')->find($validated['inscription_id']);
-            $cours = Cours::with('matiere')->find($validated['cours_id']);
-            
-            if ($inscription->etudiant->user) {
-                NotificationHelper::envoyer(
-                    $inscription->etudiant->user->id,
-                    'Nouvelle note disponible',
-                    'Une note a été ajoutée en ' . $cours->matiere->nom_matiere . ': ' . $validated['valeur_note'] . '/20'
-                );
+                // Notification à l'étudiant
+                $inscription = Inscription::find($noteData['inscription_id']);
+                if ($inscription->etudiant->user) {
+                    NotificationHelper::envoyer(
+                        $inscription->etudiant->user->id,
+                        'Nouvelle note ajoutée',
+                        'Une note a été ajoutée en ' . $note->cours->matiere->nom_matiere
+                    );
+                }
+                $count++;
             }
-
-            DB::commit();
-
-            return redirect()->route('admin.notes.index')
-                ->with('success', 'Note ajoutée avec succès');
-                
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Erreur lors de l\'ajout de la note: ' . $e->getMessage())
-                ->withInput();
         }
+
+        return redirect()->route('admin.notes.index')
+            ->with('success', "$count note(s) enregistrée(s) avec succès");
     }
 
-    public function show(string $id)
+    public function show(Note $note)
     {
-        $note = Note::with([
-            'inscription.etudiant',
-            'inscription.classe',
-            'cours.matiere',
-            'cours.enseignant',
-            'typeExamen'
-        ])->findOrFail($id);
-
+        $note->load(['inscription.etudiant', 'inscription.classe', 'cours.matiere', 'typeExamen']);
         return view('admin.notes.show', compact('note'));
     }
 
-    public function edit(string $id)
+    public function edit(Note $note)
     {
-        $note = Note::findOrFail($id);
         $typesExamens = TypeExamen::all();
+        $note->load(['inscription.etudiant', 'inscription.classe', 'cours.matiere']);
         
         return view('admin.notes.edit', compact('note', 'typesExamens'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, Note $note)
     {
         $validated = $request->validate([
             'type_examen_id' => 'required|exists:types_examens,id',
             'valeur_note' => 'required|numeric|min:0|max:20'
         ]);
 
-        $note = Note::findOrFail($id);
         $note->update($validated);
 
         return redirect()->route('admin.notes.index')
-            ->with('success', 'Note mise à jour avec succès');
+            ->with('success', 'Note modifiée avec succès');
     }
 
-    public function destroy(string $id)
+    public function destroy(Note $note)
     {
-        $note = Note::findOrFail($id);
         $note->delete();
-
+        
         return redirect()->route('admin.notes.index')
             ->with('success', 'Note supprimée avec succès');
     }
 
-    public function parClasse(string $classe_id)
+    // Méthode pour afficher les notes par classe
+    public function parClasse(Request $request)
     {
-        $classe = Classe::findOrFail($classe_id);
         $anneeActive = AnneeScolaire::where('est_active', true)->first();
+        $classe_id = $request->get('classe_id');
         
-        $inscriptions = Inscription::with([
-            'etudiant',
-            'notes.cours.matiere',
-            'notes.typeExamen'
-        ])
-        ->where('classe_id', $classe_id)
-        ->where('annee_id', $anneeActive->id)
-        ->get();
-
-        return view('admin.notes.par-classe', compact('classe', 'inscriptions', 'anneeActive'));
+        $notes = Note::with(['inscription.etudiant', 'cours.matiere', 'typeExamen'])
+            ->whereHas('inscription', function($query) use ($anneeActive, $classe_id) {
+                $query->where('annee_id', $anneeActive->id);
+                if ($classe_id) {
+                    $query->where('classe_id', $classe_id);
+                }
+            })
+            ->orderBy('date_saisie', 'desc')
+            ->get();
+        
+        return view('admin.notes.par-classe', compact('notes', 'anneeActive'));
     }
 }

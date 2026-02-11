@@ -45,26 +45,58 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3">
-                            <label for="specialite" class="form-label">Spécialité <span class="text-danger">*</span></label>
-                            <select class="form-select @error('specialite') is-invalid @enderror" id="specialite" name="specialite" required>
-                                <option value="">-- Sélectionner --</option>
-                                <option value="Mathématiques" {{ old('specialite') == 'Mathématiques' ? 'selected' : '' }}>Mathématiques</option>
-                                <option value="Français" {{ old('specialite') == 'Français' ? 'selected' : '' }}>Français</option>
-                                <option value="Anglais" {{ old('specialite') == 'Anglais' ? 'selected' : '' }}>Anglais</option>
-                                <option value="Physique-Chimie" {{ old('specialite') == 'Physique-Chimie' ? 'selected' : '' }}>Physique-Chimie</option>
-                                <option value="SVT" {{ old('specialite') == 'SVT' ? 'selected' : '' }}>SVT</option>
-                                <option value="Histoire-Géographie" {{ old('specialite') == 'Histoire-Géographie' ? 'selected' : '' }}>Histoire-Géographie</option>
-                                <option value="Philosophie" {{ old('specialite') == 'Philosophie' ? 'selected' : '' }}>Philosophie</option>
-                                <option value="EPS" {{ old('specialite') == 'EPS' ? 'selected' : '' }}>EPS</option>
-                                <option value="Informatique" {{ old('specialite') == 'Informatique' ? 'selected' : '' }}>Informatique</option>
-                                <option value="Arts Plastiques" {{ old('specialite') == 'Arts Plastiques' ? 'selected' : '' }}>Arts Plastiques</option>
-                            </select>
-                            @error('specialite')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                  <div class="mb-3">
+    <label for="specialite" class="form-label">Spécialité <span class="text-danger">*</span></label>
+    <select class="form-select @error('specialite') is-invalid @enderror" id="specialite" name="specialite" required onchange="toggleAutreSpecialite()">
+        <option value="">-- Sélectionner --</option>
+        <option value="Mathématiques" {{ old('specialite', $enseignant->specialite ?? '') == 'Mathématiques' ? 'selected' : '' }}>Mathématiques</option>
+        <option value="Français" {{ old('specialite', $enseignant->specialite ?? '') == 'Français' ? 'selected' : '' }}>Français</option>
+        <option value="Anglais" {{ old('specialite', $enseignant->specialite ?? '') == 'Anglais' ? 'selected' : '' }}>Anglais</option>
+        <option value="Physique-Chimie" {{ old('specialite', $enseignant->specialite ?? '') == 'Physique-Chimie' ? 'selected' : '' }}>Physique-Chimie</option>
+        <option value="SVT" {{ old('specialite', $enseignant->specialite ?? '') == 'SVT' ? 'selected' : '' }}>SVT (Sciences de la Vie et de la Terre)</option>
+        <option value="Histoire-Géographie" {{ old('specialite', $enseignant->specialite ?? '') == 'Histoire-Géographie' ? 'selected' : '' }}>Histoire-Géographie</option>
+        <option value="Philosophie" {{ old('specialite', $enseignant->specialite ?? '') == 'Philosophie' ? 'selected' : '' }}>Philosophie</option>
+        <option value="EPS" {{ old('specialite', $enseignant->specialite ?? '') == 'EPS' ? 'selected' : '' }}>EPS (Éducation Physique et Sportive)</option>
+        <option value="Informatique" {{ old('specialite', $enseignant->specialite ?? '') == 'Informatique' ? 'selected' : '' }}>Informatique</option>
+        <option value="Arts Plastiques" {{ old('specialite', $enseignant->specialite ?? '') == 'Arts Plastiques' ? 'selected' : '' }}>Arts Plastiques</option>
+        <option value="Musique" {{ old('specialite', $enseignant->specialite ?? '') == 'Musique' ? 'selected' : '' }}>Musique</option>
+        <option value="Espagnol" {{ old('specialite', $enseignant->specialite ?? '') == 'Espagnol' ? 'selected' : '' }}>Espagnol</option>
+        <option value="Allemand" {{ old('specialite', $enseignant->specialite ?? '') == 'Allemand' ? 'selected' : '' }}>Allemand</option>
+        <option value="Économie" {{ old('specialite', $enseignant->specialite ?? '') == 'Économie' ? 'selected' : '' }}>Économie</option>
+        <option value="Autre">Autre (préciser)</option>
+    </select>
+    @error('specialite')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
 
+<!-- Champ caché qui apparaît si "Autre" est sélectionné -->
+<div class="mb-3 d-none" id="autreSpecialiteDiv">
+    <label for="autre_specialite" class="form-label">Précisez la spécialité <span class="text-danger">*</span></label>
+    <input type="text" class="form-control" id="autre_specialite" name="autre_specialite" placeholder="Ex: Chinois, Comptabilité, etc.">
+</div>
+
+@push('scripts')
+<script>
+function toggleAutreSpecialite() {
+    const select = document.getElementById('specialite');
+    const autreDiv = document.getElementById('autreSpecialiteDiv');
+    const autreInput = document.getElementById('autre_specialite');
+    
+    if (select.value === 'Autre') {
+        autreDiv.classList.remove('d-none');
+        autreInput.required = true;
+    } else {
+        autreDiv.classList.add('d-none');
+        autreInput.required = false;
+        autreInput.value = '';
+    }
+}
+
+// Check on page load
+window.addEventListener('DOMContentLoaded', toggleAutreSpecialite);
+</script>
+@endpush
                         <div class="mb-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="create_account" name="create_account" value="1" {{ old('create_account') ? 'checked' : '' }}>

@@ -223,6 +223,32 @@
                             @endif
                             
                             @if(auth()->user()->isEleve())
+                             <!-- Bouton changement d'année -->
+    <li class="nav-item mb-2">
+        <a class="nav-link text-white bg-info" href="{{ route('eleve.selection-annee') }}">
+            <i class="fas fa-sync-alt me-2"></i>Changer d'Année
+        </a>
+    </li>
+    
+    @if(session('inscription_selectionnee'))
+        @php
+            $inscriptionActive = \App\Models\Inscription::find(session('inscription_selectionnee'));
+        @endphp
+        <li class="nav-item mb-3">
+            <div class="alert alert-info m-2 p-2 small">
+                <strong>Année consultée:</strong><br>
+                {{ $inscriptionActive->annee->libelle }}<br>
+                <small>{{ $inscriptionActive->classe->nom_classe }}</small>
+            </div>
+        </li>
+    @endif
+    
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('eleve.dashboard') ? 'active' : '' }}" 
+           href="{{ route('eleve.dashboard') }}">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+        </a>
+    </li>
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->routeIs('eleve.dashboard') ? 'active' : '' }}" href="{{ route('eleve.dashboard') }}">
                                         <i class="fas fa-tachometer-alt"></i> Dashboard
@@ -268,6 +294,62 @@
                             </div>
                         </div>
                     </nav>
+
+                    <!-- Messages Flash avec Toasts -->
+@if(session('success'))
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+    <div class="toast show align-items-center text-white bg-success border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+@endif
+
+@if(session('error'))
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+    <div class="toast show align-items-center text-white bg-danger border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+@endif
+
+@if(session('warning'))
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+    <div class="toast show align-items-center text-white bg-warning border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-exclamation-triangle me-2"></i>{{ session('warning') }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+@endif
+
+@if($errors->any())
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+    <div class="toast show align-items-center text-white bg-danger border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                @foreach($errors->all() as $error)
+                    {{ $error }}<br>
+                @endforeach
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+@endif
 
                     <!-- Alerts -->
                     @if(session('success'))
@@ -328,5 +410,17 @@
     </script>
     
     @stack('scripts')
+
+    <script>
+// Auto-hide toasts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    var toasts = document.querySelectorAll('.toast');
+    toasts.forEach(function(toast) {
+        setTimeout(function() {
+            toast.classList.remove('show');
+        }, 5000);
+    });
+});
+</script>
 </body>
 </html>

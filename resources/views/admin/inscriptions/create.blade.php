@@ -19,22 +19,44 @@
 
                     <form action="{{ route('admin.inscriptions.store') }}" method="POST">
                         @csrf
+<div class="mb-3">
+    <label for="search_etudiant" class="form-label">Rechercher un Étudiant <span class="text-danger">*</span></label>
+    <div class="input-group mb-2">
+        <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <input type="text" class="form-control" id="search_etudiant" placeholder="Tapez le nom, prénom ou matricule...">
+    </div>
+    
+    <select class="form-select @error('etudiant_id') is-invalid @enderror" 
+            id="etudiant_id" name="etudiant_id" required size="8">
+        <option value="">-- Tous les étudiants --</option>
+        @foreach($etudiants as $etudiant)
+        <option value="{{ $etudiant->id }}" {{ old('etudiant_id') == $etudiant->id ? 'selected' : '' }}
+                data-search="{{ strtolower($etudiant->nom . ' ' . $etudiant->prenom . ' ' . $etudiant->matricule) }}">
+            {{ $etudiant->nom_complet }} ({{ $etudiant->matricule }})
+        </option>
+        @endforeach
+    </select>
+    @error('etudiant_id')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
 
-                        <div class="mb-3">
-                            <label for="etudiant_id" class="form-label">Étudiant <span class="text-danger">*</span></label>
-                            <select class="form-select @error('etudiant_id') is-invalid @enderror" 
-                                    id="etudiant_id" name="etudiant_id" required>
-                                <option value="">-- Sélectionner un étudiant --</option>
-                                @foreach($etudiants as $etudiant)
-                                <option value="{{ $etudiant->id }}" {{ old('etudiant_id') == $etudiant->id ? 'selected' : '' }}>
-                                    {{ $etudiant->nom_complet }} ({{ $etudiant->matricule }})
-                                </option>
-                                @endforeach
-                            </select>
-                            @error('etudiant_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+@push('scripts')
+<script>
+document.getElementById('search_etudiant').addEventListener('keyup', function() {
+    const searchTerm = this.value.toLowerCase();
+    const select = document.getElementById('etudiant_id');
+    const options = select.querySelectorAll('option');
+    
+    options.forEach(option => {
+        if (option.value === '') return; // Skip first option
+        
+        const searchData = option.getAttribute('data-search');
+        option.style.display = searchData.includes(searchTerm) ? '' : 'none';
+    });
+});
+</script>
+@endpush
 
                         <div class="mb-3">
                             <label for="classe_id" class="form-label">Classe <span class="text-danger">*</span></label>

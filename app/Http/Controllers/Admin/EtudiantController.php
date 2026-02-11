@@ -28,14 +28,14 @@ class EtudiantController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'matricule' => 'required|string|max:20|unique:etudiants',
-            'nom' => 'required|string|max:50',
-            'prenom' => 'required|string|max:50',
-            'date_naissance' => 'required|date',
-            'sexe' => 'required|in:M,F',
-            'create_account' => 'nullable|boolean'
-        ]);
+          $validated = $request->validate([
+        'matricule' => 'required|string|max:20|unique:etudiants',
+        'nom' => 'required|string|max:50',
+        'prenom' => 'required|string|max:50',
+        'date_naissance' => 'required|date|before:today|after:1900-01-01', // AJOUT ICI pour refuser des dates de naissance irréalistes
+        'sexe' => 'required|in:M,F',
+        'create_account' => 'nullable|boolean'
+    ]);
 
         DB::beginTransaction();
         
@@ -94,15 +94,15 @@ class EtudiantController extends Controller
     }
 
     public function update(Request $request, string $id)
-    {
-        $validated = $request->validate([
-            'matricule' => 'required|string|max:20|unique:etudiants,matricule,' . $id,
-            'nom' => 'required|string|max:50',
-            'prenom' => 'required|string|max:50',
-            'date_naissance' => 'required|date',
-            'sexe' => 'required|in:M,F',
-            'statut_actuel' => 'required|in:Inscrit,Diplomé,Quitté'
-        ]);
+        {
+            $validated = $request->validate([
+                'matricule' => 'required|string|max:20|unique:etudiants,matricule,' .  $id,
+                'nom' => 'required|string|max:50',
+                'prenom' => 'required|string|max:50',
+                'date_naissance' => 'required|date|before:today|after:1900-01-01',
+                'sexe' => 'required|in:M,F',
+                'statut_actuel' => 'required|in:Inscrit,Diplomé,Quitté'
+            ]);
 
         $etudiant = Etudiant::findOrFail($id);
         $etudiant->update($validated);

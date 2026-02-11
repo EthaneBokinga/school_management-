@@ -52,6 +52,11 @@ class Inscription extends Model
     {
         return $this->hasMany(Paiement::class, 'inscription_id');
     }
+    // Ajouter cette relation
+public function echeances()
+{
+    return $this->hasMany(EcheancePaiement::class, 'inscription_id');
+}
 
     // Scopes
     public function scopeAnneeActive($query)

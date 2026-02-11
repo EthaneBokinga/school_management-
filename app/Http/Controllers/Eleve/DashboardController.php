@@ -10,50 +10,47 @@ use Illuminate\Http\Request;
 class DashboardController extends Controller
 {
     public function index()
-    {
-        $user = auth()->user();
-        $etudiant = Etudiant::with('inscriptions.classe')->find($user->reference_id);
-        $anneeActive = AnneeScolaire::where('est_active', true)->first();
-        
-        // Inscription active
-        $inscriptionActive = $etudiant->inscriptions()
-            ->where('annee_id', $anneeActive->id)
-            ->with(['classe', 'notes.cours.matiere', 'absences', 'paiements'])
-            ->first();
-        
-        if (!$inscriptionActive) {
-            return view('eleve.dashboard')->with('error', 'Aucune inscription active trouvée');
-        }
-        
-        // Statistiques
-        $totalNotes = $inscriptionActive->notes->count();
-        $moyenneGenerale = $inscriptionActive->notes->avg('valeur_note');
-        $totalAbsences = $inscriptionActive->absences->count();
-        $absencesNonJustifiees = $inscriptionActive->absences->where('est_justifie', false)->count();
-        
-        // Statut paiement
-        $fraisScolarite = $inscriptionActive->classe->frais_scolarite;
-        $montantPaye = $inscriptionActive->paiements->sum('montant_paye');
-        $resteAPayer = $fraisScolarite - $montantPaye;
-        
-        // Dernières notes
-        $dernieresNotes = $inscriptionActive->notes()
-            ->with(['cours.matiere', 'typeExamen'])
-            ->latest('date_saisie')
-            ->limit(5)
-            ->get();
-        
-        return view('eleve.dashboard', compact(
-            'etudiant',
-            'inscriptionActive',
-            'totalNotes',
-            'moyenneGenerale',
-            'totalAbsences',
-            'absencesNonJustifiees',
-            'fraisScolarite',
-            'montantPaye',
-            'resteAPayer',
-            'dernieresNotes'
-        ));
+{
+    // Vérifier si une année a été sélectionnée
+    if (!session('inscription_selectionnee')) {
+        return redirect()->route('eleve.selection-annee');
     }
+
+    $inscription = Inscription::with(['etudiant', 'classe', 'annee'])
+        ->findOrFail(session('inscription_selectionnee'));
+    
+    $etudiant = $inscription->etudiant;
+
+    // Statistiques
+    $totalNotes = $inscription->notes->count();
+    $moyenneGenerale = $inscription->notes->count() > 0 
+        ? $inscription->notes->avg('valeur_note') 
+        : null;
+    
+    $totalAbsences = $inscription->absences->count();
+    $absencesNonJustifiees = $inscription->absences->where('est_justifie', false)->count();
+    
+    $fraisScolarite = $inscription->classe->frais_scolarite;
+    $montantPaye = $inscription->montant_total_paye;
+    $resteAPayer = $inscription->reste_a_payer_total;
+    
+    $dernieresNotes = $inscription->notes()
+        ->with(['cours.matiere', 'typeExamen'])
+        ->orderBy('date_saisie', 'desc')
+        ->take(5)
+        ->get();
+
+    return view('eleve.dashboard', compact(
+        'inscription',
+        'etudiant',
+        'totalNotes',
+        'moyenneGenerale',
+        'totalAbsences',
+        'absencesNonJustifiees',
+        'fraisScolarite',
+        'montantPaye',
+        'resteAPayer',
+        'dernieresNotes'
+    ));
+}
 }

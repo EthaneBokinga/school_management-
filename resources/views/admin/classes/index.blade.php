@@ -7,6 +7,31 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="mb-0"><i class="fas fa-school me-2"></i>Liste des Classes</h4>
+        <!-- Barre de recherche -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="searchClasses" placeholder="Rechercher une classe...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="filterNiveau">
+                    <option value="">Tous les niveaux</option>
+                    <option value="6ème">6ème</option>
+                    <option value="5ème">5ème</option>
+                    <option value="4ème">4ème</option>
+                    <option value="3ème">3ème</option>
+                    <option value="Seconde">Seconde</option>
+                    <option value="Première">Première</option>
+                    <option value="Terminale">Terminale</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
         <a href="{{ route('admin.classes.create') }}" class="btn btn-primary">
             <i class="fas fa-plus me-2"></i>Nouvelle Classe
         </a>
@@ -83,4 +108,40 @@ function confirmDelete(id) {
 }
 </script>
 @endpush
+
+
+
+
+
+@push('scripts')
+<script>
+// Recherche en temps réel
+document.getElementById('searchClasses').addEventListener('keyup', function() {
+    filterClasses();
+});
+
+document.getElementById('filterNiveau').addEventListener('change', function() {
+    filterClasses();
+});
+
+function filterClasses() {
+    const searchTerm = document.getElementById('searchClasses').value.toLowerCase();
+    const niveauFilter = document.getElementById('filterNiveau').value;
+    const rows = document.querySelectorAll('tbody tr');
+
+    rows.forEach(row => {
+        if (row.cells.length < 2) return; // Skip empty row
+        
+        const nomClasse = row.cells[1].textContent.toLowerCase();
+        const niveau = row.cells[2].textContent.trim();
+
+        const matchSearch = nomClasse.includes(searchTerm);
+        const matchNiveau = !niveauFilter || niveau.includes(niveauFilter);
+
+        row.style.display = (matchSearch && matchNiveau) ? '' : 'none';
+    });
+}
+</script>
+@endpush
 @endsection
+

@@ -25,19 +25,27 @@ class ClasseController extends Controller
         return view('admin.classes.create');
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nom_classe' => 'required|string|max:50',
-            'niveau' => 'required|string|max:50',
-            'frais_scolarite' => 'required|numeric|min:0'
-        ]);
+  public function store(Request $request)
+{
+    $validated = $request->validate([
+        'nom_classe' => 'required|string|max:50|unique:classes',
+        'niveau' => 'required|string|max:50',
+        'autre_niveau' => 'nullable|string|max:50',
+        'frais_scolarite' => 'required|numeric|min:0'
+    ]);
 
-        Classe::create($validated);
-
-        return redirect()->route('admin.classes.index')
-            ->with('success', 'Classe créée avec succès');
+    // Si "Autre" est sélectionné, utiliser le champ "autre_niveau"
+    if ($validated['niveau'] === 'Autre' && !empty($validated['autre_niveau'])) {
+        $validated['niveau'] = $validated['autre_niveau'];
     }
+
+    unset($validated['autre_niveau']); // Retirer ce champ temporaire
+
+    Classe::create($validated);
+
+    return redirect()->route('admin.classes.index')
+        ->with('success', 'Classe créée avec succès');
+}
 
     public function show(string $id)
     {

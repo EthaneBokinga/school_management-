@@ -13,7 +13,9 @@ class Absence extends Model
         'inscription_id',
         'cours_id',
         'date_absence',
-        'est_justifie'
+        'est_justifie',
+        'motif_justification', // AJOUTER
+    'fichier_justificatif'  // AJOUTER
     ];
 
     protected $casts = [
