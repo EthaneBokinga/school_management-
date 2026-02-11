@@ -11,18 +11,25 @@ class SelectionAnneeController extends Controller
 {
     public function index()
     {
-        $etudiant = Etudiant::where('email', auth()->user()->email)
-            ->orWhereHas('user', function($q) {
-                $q->where('id', auth()->id());
-            })
-            ->firstOrFail();
+        $user = auth()->user();
+        $etudiant = Etudiant::find($user->reference_id);
+        
+        if (!$etudiant) {
+            abort(404, 'Étudiant non trouvé');
+        }
         
         // Récupérer toutes les inscriptions de l'étudiant
         $inscriptions = Inscription::with(['annee', 'classe'])
             ->where('etudiant_id', $etudiant->id)
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
+        // Si l'étudiant n'a qu'une seule inscription, la sélectionner automatiquement
+        if ($inscriptions->count() === 1) {
+            session(['inscription_selectionnee' => $inscriptions->first()->id]);
+            return redirect()->route('eleve.dashboard');
+        }
+
         return view('eleve.selection-annee', compact('etudiant', 'inscriptions'));
     }
 

@@ -44,6 +44,37 @@ class EcheanceController extends Controller
             ->with('success', 'Échéance créée avec succès');
     }
 
+    public function edit($id)
+    {
+        $echeance = EcheancePaiement::findOrFail($id);
+        return view('admin.echeances.edit', compact('echeance'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $echeance = EcheancePaiement::findOrFail($id);
+
+        $validated = $request->validate([
+            'mois' => 'required|string|max:50',
+            'montant_echeance' => 'required|numeric|min:0',
+            'date_limite' => 'required|date'
+        ]);
+
+        $echeance->update($validated);
+
+        return redirect()->route('admin.echeances.index')
+            ->with('success', 'Échéance mise à jour avec succès');
+    }
+
+    public function destroy($id)
+    {
+        $echeance = EcheancePaiement::findOrFail($id);
+        $echeance->delete();
+
+        return redirect()->route('admin.echeances.index')
+            ->with('success', 'Échéance supprimée avec succès');
+    }
+
     // Générer automatiquement les échéances mensuelles
     public function genererAuto(Inscription $inscription)
     {

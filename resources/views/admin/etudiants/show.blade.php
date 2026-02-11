@@ -56,11 +56,9 @@
                         <a href="{{ route('admin.etudiants.edit', $etudiant->id) }}" class="btn btn-warning">
                             <i class="fas fa-edit me-2"></i>Modifier
                         </a>
-                        @if($etudiant->inscription_active)
                         <a href="{{ route('admin.etudiants.reinscription', $etudiant->id) }}" class="btn btn-info">
                             <i class="fas fa-redo me-2"></i>Réinscrire
                         </a>
-                        @endif
                     </div>
                 </div>
             </div>

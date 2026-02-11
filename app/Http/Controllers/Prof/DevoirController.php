@@ -56,6 +56,20 @@ class DevoirController extends Controller
 
         $devoir = Devoir::create($validated);
 
+        // Notifier l'admin
+        $admins = \App\Models\User::whereHas('role', function($q) {
+            $q->where('nom_role', 'Admin');
+        })->get();
+        
+        foreach ($admins as $admin) {
+            NotificationHelper::envoyer(
+                $admin->id,
+                'Nouveau devoir créé',
+                'Le professeur ' . $enseignant->prenom . ' ' . $enseignant->nom . ' a créé un devoir en ' . 
+                $cours->matiere->nom_matiere
+            );
+        }
+
         // Notifier tous les élèves de la classe
         $inscriptions = $cours->classe->inscriptions()
             ->whereHas('annee', function($q) {

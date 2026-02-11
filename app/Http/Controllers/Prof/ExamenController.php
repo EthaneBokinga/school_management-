@@ -65,6 +65,20 @@ class ExamenController extends Controller
 
         $examen = Examen::create($validated);
 
+        // Notifier l'admin
+        $admins = \App\Models\User::whereHas('role', function($q) {
+            $q->where('nom_role', 'Admin');
+        })->get();
+        
+        foreach ($admins as $admin) {
+            NotificationHelper::envoyer(
+                $admin->id,
+                'Nouvel examen créé',
+                'Le professeur ' . $enseignant->prenom . ' ' . $enseignant->nom . ' a créé un examen en ' . 
+                $cours->matiere->nom_matiere
+            );
+        }
+
         // Notifier tous les élèves
         $inscriptions = $cours->classe->inscriptions()
             ->whereHas('annee', function($q) {

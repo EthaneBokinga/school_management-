@@ -519,6 +519,15 @@
             .features-grid, .roles-grid { grid-template-columns: 1fr; }
         }
     </style>
+
+<script>
+    (function() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+    })();
+</script>
+<link rel="stylesheet" href="{{ asset('css/themes.css') }}">
+
 </head>
 <body>
 
@@ -527,6 +536,16 @@
 
 <!-- ─── NAVBAR ─── -->
 <nav>
+
+<!-- Toggle thème -->
+<div class="theme-toggle-wrapper">
+    <button class="theme-toggle-btn" onclick="toggleTheme()" title="Changer le thème">
+        <span class="theme-icon-sun"><i class="fas fa-sun"></i></span>
+        <span class="theme-icon-moon"><i class="fas fa-moon"></i></span>
+        <span class="theme-toggle-thumb"></span>
+    </button>
+</div>
+
     <a href="#" class="nav-logo">
         <div class="nav-logo-icon">
             <i class="fas fa-graduation-cap"></i>
@@ -734,5 +753,13 @@
     <div class="footer-copy">© {{ date('Y') }} SchoolManager. Tous droits réservés.</div>
 </footer>
 
+<script>
+function toggleTheme() {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+}
+</script>
 </body>
 </html>

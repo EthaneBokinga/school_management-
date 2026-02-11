@@ -1,0 +1,327 @@
+/* Theme CSS - Mode Sombre et Clair */
+
+/* Style du Toggle Thème */
+.theme-toggle-container {
+    display: flex;
+    align-items: center;
+}
+
+.theme-toggle-btn {
+    padding: 0.5rem 0.7rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle-btn i {
+    transition: all 0.3s ease;
+}
+
+/* Thème Clair (défaut) */
+:root[data-bs-theme="light"],
+:root {
+    --bs-body-color: #333;
+    --bs-body-bg: #f8f9fa;
+    --bs-secondary-bg: #e9ecef;
+    --bs-tertiary-bg: #f8f9fa;
+    --bs-card-bg: #ffffff;
+    --bs-card-border-color: #dee2e6;
+    --bs-border-color: #dee2e6;
+    --bs-form-control-bg: #ffffff;
+    --bs-form-control-border-color: #dee2e6;
+    --bs-table-bg: #ffffff;
+    --bs-table-striped-bg: #f8f9fa;
+    --bs-table-border-color: #dee2e6;
+    --bs-navbar-bg: #ffffff;
+    --bs-navbar-color: #333;
+}
+
+/* Thème Sombre */
+:root[data-bs-theme="dark"] {
+    --bs-body-color: #e0e0e0;
+    --bs-body-bg: #1a1a1a;
+    --bs-secondary-bg: #2d2d2d;
+    --bs-tertiary-bg: #242424;
+    --bs-card-bg: #2d2d2d;
+    --bs-card-border-color: #444;
+    --bs-border-color: #444;
+    --bs-form-control-bg: #2d2d2d;
+    --bs-form-control-border-color: #444;
+    --bs-form-control-color: #e0e0e0;
+    --bs-table-bg: #2d2d2d;
+    --bs-table-striped-bg: #242424;
+    --bs-table-border-color: #444;
+    --bs-navbar-bg: #2d2d2d;
+    --bs-navbar-color: #e0e0e0;
+}
+
+/* Styles appliqués au thème sombre */
+:root[data-bs-theme="dark"] {
+    color-scheme: dark;
+}
+
+:root[data-bs-theme="dark"] body {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .card {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .card-header {
+    background-color: #242424 !important;
+    border-color: #444 !important;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .card-body {
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .navbar {
+    background-color: #2d2d2d !important;
+    border-bottom: 1px solid #444;
+}
+
+:root[data-bs-theme="dark"] .navbar-light .navbar-brand {
+    color: #e0e0e0 !important;
+}
+
+:root[data-bs-theme="dark"] .nav-link {
+    color: #b0b0b0 !important;
+}
+
+:root[data-bs-theme="dark"] .nav-link:hover,
+:root[data-bs-theme="dark"] .nav-link.active {
+    color: #e0e0e0 !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+:root[data-bs-theme="dark"] .table {
+    color: #e0e0e0;
+    border-color: #444;
+}
+
+:root[data-bs-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+:root[data-bs-theme="dark"] .table thead th {
+    background-color: #242424;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .form-control,
+:root[data-bs-theme="dark"] .form-select {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .form-control:focus,
+:root[data-bs-theme="dark"] .form-select:focus {
+    background-color: #2d2d2d;
+    border-color: #4e73df;
+    color: #e0e0e0;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+:root[data-bs-theme="dark"] .form-control::placeholder {
+    color: #888;
+}
+
+:root[data-bs-theme="dark"] .input-group-text {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .btn-outline-danger:hover {
+    background-color: #e74a3b;
+    border-color: #e74a3b;
+}
+
+:root[data-bs-theme="dark"] .alert {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .alert-info {
+    background-color: rgba(54, 185, 204, 0.1);
+    border-color: #36b9cc;
+    color: #89d4e0;
+}
+
+:root[data-bs-theme="dark"] .alert-warning {
+    background-color: rgba(246, 194, 62, 0.1);
+    border-color: #f6c23e;
+    color: #fad86a;
+}
+
+:root[data-bs-theme="dark"] .alert-danger {
+    background-color: rgba(231, 74, 59, 0.1);
+    border-color: #e74a3b;
+    color: #f17f5e;
+}
+
+:root[data-bs-theme="dark"] .alert-light {
+    background-color: #242424;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .modal-content {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .modal-header {
+    background-color: #242424;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .modal-footer {
+    background-color: #242424;
+    border-color: #444;
+}
+
+:root[data-bs-theme="dark"] .badge {
+    opacity: 0.8;
+}
+
+:root[data-bs-theme="dark"] .text-muted {
+    color: #888 !important;
+}
+
+:root[data-bs-theme="dark"] .text-secondary {
+    color: #888 !important;
+}
+
+:root[data-bs-theme="dark"] .border {
+    border-color: #444 !important;
+}
+
+:root[data-bs-theme="dark"] .btn-light {
+    background-color: #3d3d3d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .btn-light:hover {
+    background-color: #4d4d4d;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .sidebar {
+    background-color: #2d2d2d;
+    border-right: 1px solid #444;
+}
+
+:root[data-bs-theme="dark"] .dropdown-menu {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+
+:root[data-bs-theme="dark"] .dropdown-item {
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .dropdown-item:hover,
+:root[data-bs-theme="dark"] .dropdown-item:focus {
+    background-color: #3d3d3d;
+    color: #e0e0e0;
+}
+
+:root[data-bs-theme="dark"] .dropdown-divider {
+    border-color: #444;
+}
+
+/* Toggles */
+:root[data-bs-theme="dark"] .form-check-input {
+    background-color: #444;
+    border-color: #555;
+}
+
+:root[data-bs-theme="dark"] .form-check-input:checked {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+:root[data-bs-theme="dark"] .form-check-input:focus {
+    border-color: #6a8be8;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+/* Position fixe toasts */
+:root[data-bs-theme="dark"] .toast {
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+}
+
+:root[data-bs-theme="dark"] .btn-close {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+:root[data-bs-theme="dark"] .btn-close:focus {
+    background-color: rgba(255, 255, 255, 0.75);
+}
+
+/* Scrollbars */
+:root[data-bs-theme="dark"] ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+:root[data-bs-theme="dark"] ::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+:root[data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 5px;
+}
+
+:root[data-bs-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Transitions lisses */
+html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.form-control {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-link {
+    transition: color 0.2s ease, background-color 0.2s ease;
+}

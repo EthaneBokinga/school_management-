@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Eleve;
 
 use App\Http\Controllers\Controller;
 use App\Models\Etudiant;
+use App\Models\Inscription;
 use App\Models\AnneeScolaire;
 use Illuminate\Http\Request;
 
@@ -16,32 +17,32 @@ class DashboardController extends Controller
         return redirect()->route('eleve.selection-annee');
     }
 
-    $inscription = Inscription::with(['etudiant', 'classe', 'annee'])
+    $inscriptionActive = Inscription::with(['etudiant', 'classe', 'annee'])
         ->findOrFail(session('inscription_selectionnee'));
     
-    $etudiant = $inscription->etudiant;
+    $etudiant = $inscriptionActive->etudiant;
 
     // Statistiques
-    $totalNotes = $inscription->notes->count();
-    $moyenneGenerale = $inscription->notes->count() > 0 
-        ? $inscription->notes->avg('valeur_note') 
+    $totalNotes = $inscriptionActive->notes->count();
+    $moyenneGenerale = $inscriptionActive->notes->count() > 0 
+        ? $inscriptionActive->notes->avg('valeur_note') 
         : null;
     
-    $totalAbsences = $inscription->absences->count();
-    $absencesNonJustifiees = $inscription->absences->where('est_justifie', false)->count();
+    $totalAbsences = $inscriptionActive->absences->count();
+    $absencesNonJustifiees = $inscriptionActive->absences->where('est_justifie', false)->count();
     
-    $fraisScolarite = $inscription->classe->frais_scolarite;
-    $montantPaye = $inscription->montant_total_paye;
-    $resteAPayer = $inscription->reste_a_payer_total;
+    $fraisScolarite = $inscriptionActive->classe->frais_scolarite;
+    $montantPaye = $inscriptionActive->montant_total_paye;
+    $resteAPayer = $inscriptionActive->reste_a_payer_total;
     
-    $dernieresNotes = $inscription->notes()
+    $dernieresNotes = $inscriptionActive->notes()
         ->with(['cours.matiere', 'typeExamen'])
         ->orderBy('date_saisie', 'desc')
         ->take(5)
         ->get();
 
     return view('eleve.dashboard', compact(
-        'inscription',
+        'inscriptionActive',
         'etudiant',
         'totalNotes',
         'moyenneGenerale',

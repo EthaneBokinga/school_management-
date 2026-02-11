@@ -41,6 +41,16 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control @error('description') is-invalid @enderror" 
+                                   id="description" name="description" rows="3"
+                                   placeholder="Décrivez brièvement le contenu de ce document">{{ old('description') }}</textarea>
+                            @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="fichier" class="form-label">Fichier <span class="text-danger">*</span></label>
                             <input type="file" class="form-control @error('fichier') is-invalid @enderror" 
                                    id="fichier" name="fichier" required 

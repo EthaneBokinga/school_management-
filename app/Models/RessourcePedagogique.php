@@ -9,9 +9,12 @@ class RessourcePedagogique extends Model
 {
     use HasFactory;
 
+    protected $table = 'ressources_pedagogiques';
+
     protected $fillable = [
         'cours_id',
         'titre',
+        'description',
         'url_fichier',
         'type_fichier',
         'taille_fichier'

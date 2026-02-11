@@ -8,6 +8,7 @@ use App\Models\Cours;
 use App\Models\Enseignant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\NotificationHelper;
 
 class RessourceController extends Controller
 {
@@ -44,6 +45,7 @@ class RessourceController extends Controller
         $validated = $request->validate([
             'cours_id' => 'required|exists:cours,id',
             'titre' => 'required|string|max:200',
+            'description' => 'nullable|string',
             'fichier' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:20480' // 20MB max
         ]);
 
@@ -62,13 +64,28 @@ class RessourceController extends Controller
             // Stocker dans storage/app/public/ressources
             $path = $file->storeAs('public/ressources', $filename);
             
-            RessourcePedagogique::create([
+            $ressource = RessourcePedagogique::create([
                 'cours_id' => $validated['cours_id'],
                 'titre' => $validated['titre'],
-                'url_fichier' => Storage::url($path),
+                'description' => $validated['description'] ?? null,
+                'url_fichier' => $path,
                 'type_fichier' => $file->getClientOriginalExtension(),
                 'taille_fichier' => $file->getSize()
             ]);
+            
+            // Notifier l'admin
+            $admins = \App\Models\User::whereHas('role', function($q) {
+                $q->where('nom_role', 'Admin');
+            })->get();
+            
+            foreach ($admins as $admin) {
+                NotificationHelper::envoyer(
+                    $admin->id,
+                    'Nouvelle ressource pédagogique',
+                    'Le professeur ' . $enseignant->prenom . ' ' . $enseignant->nom . ' a uploadé une ressource en ' . 
+                    $cours->matiere->nom_matiere
+                );
+            }
         }
 
         return redirect()->route('prof.ressources.index')

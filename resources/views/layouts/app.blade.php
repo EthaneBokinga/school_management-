@@ -13,6 +13,8 @@
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Système de thèmes -->
+<link rel="stylesheet" href="{{ asset('css/themes.css') }}">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -136,6 +138,14 @@
     </style>
     
     @stack('styles')
+
+   <!-- Thème : empêche le flash au chargement -->
+<script>
+    (function() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+    })();
+</script> 
 </head>
 <body>
     <div id="app">
@@ -144,6 +154,15 @@
             <div class="row">
                 <!-- Sidebar -->
                 <nav class="col-md-2 d-md-block sidebar px-0">
+<!-- Bouton Toggle Thème -->
+<div class="theme-toggle-wrapper">
+    <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" title="Changer le thème">
+        <span class="theme-icon-sun"><i class="fas fa-sun"></i></span>
+        <span class="theme-icon-moon"><i class="fas fa-moon"></i></span>
+        <span class="theme-toggle-thumb"></span>
+    </button>
+</div>
+
                     <div class="position-sticky pt-3">
                         <div class="text-center mb-4">
                             <h5 class="text-white fw-bold">School Manager</h5>
@@ -197,6 +216,16 @@
                                         <i class="fas fa-user-times"></i> Absences
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.echeances.*') ? 'active' : '' }}" href="{{ route('admin.echeances.index') }}">
+                                        <i class="fas fa-calendar-check"></i> Échéances
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.annees.*') ? 'active' : '' }}" href="{{ route('admin.annees.index') }}">
+                                        <i class="fas fa-calendar-alt"></i> Années Scolaires
+                                    </a>
+                                </li>
                             @endif
                             
                             @if(auth()->user()->isProf())
@@ -218,6 +247,26 @@
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->routeIs('prof.absences.*') ? 'active' : '' }}" href="{{ route('prof.absences.index') }}">
                                         <i class="fas fa-user-times"></i> Absences
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('prof.emploi.*') ? 'active' : '' }}" href="{{ route('prof.emploi.index') }}">
+                                        <i class="fas fa-calendar-alt"></i> Emploi du temps
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('prof.ressources.*') ? 'active' : '' }}" href="{{ route('prof.ressources.index') }}">
+                                        <i class="fas fa-book"></i> Ressources
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('prof.devoirs.*') ? 'active' : '' }}" href="{{ route('prof.devoirs.index') }}">
+                                        <i class="fas fa-tasks"></i> Devoirs
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('prof.examens.*') ? 'active' : '' }}" href="{{ route('prof.examens.index') }}">
+                                        <i class="fas fa-file-alt"></i> Examens
                                     </a>
                                 </li>
                             @endif
@@ -249,21 +298,36 @@
             <i class="fas fa-tachometer-alt me-2"></i>Dashboard
         </a>
     </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('eleve.dashboard') ? 'active' : '' }}" href="{{ route('eleve.dashboard') }}">
-                                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('eleve.notes.*') ? 'active' : '' }}" href="{{ route('eleve.notes.index') }}">
-                                        <i class="fas fa-star"></i> Mes Notes
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('eleve.emploi.*') ? 'active' : '' }}" href="{{ route('eleve.emploi.index') }}">
-                                        <i class="fas fa-calendar-alt"></i> Emploi du temps
-                                    </a>
-                                </li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('eleve.notes.*') ? 'active' : '' }}" href="{{ route('eleve.notes.index') }}">
+            <i class="fas fa-star me-2"></i> Mes Notes
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('eleve.emploi.*') ? 'active' : '' }}" href="{{ route('eleve.emploi.index') }}">
+            <i class="fas fa-calendar-alt me-2"></i> Emploi du temps
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('eleve.ressources.*') ? 'active' : '' }}" href="{{ route('eleve.ressources.index') }}">
+            <i class="fas fa-book me-2"></i> Ressources
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('eleve.devoirs.*') ? 'active' : '' }}" href="{{ route('eleve.devoirs.index') }}">
+            <i class="fas fa-tasks me-2"></i> Devoirs
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('eleve.examens.*') ? 'active' : '' }}" href="{{ route('eleve.examens.index') }}">
+            <i class="fas fa-file-alt me-2"></i> Examens
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('eleve.absences.*') ? 'active' : '' }}" href="{{ route('eleve.absences.index') }}">
+            <i class="fas fa-user-times me-2"></i> Absences
+        </a>
+    </li>
                             @endif
                             
                             <li class="nav-item mt-3">
@@ -274,6 +338,21 @@
                             </li>
                         </ul>
                     </div>
+                    <script>
+function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+}
+
+// Initialiser l'état du bouton au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    const theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+});
+</script>
                 </nav>
 
                 <!-- Main Content -->
@@ -283,7 +362,16 @@
                         <div class="container-fluid">
                             <span class="navbar-brand mb-0 h1">@yield('page-title', 'Dashboard')</span>
                             
-                            <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <!-- Toggle Thème -->
+                                <div class="theme-toggle-container">
+                                    <button type="button" class="btn btn-sm btn-light theme-toggle-btn" id="themeToggle" 
+                                        title="{{ session('theme', 'light') === 'dark' ? 'Mode Clair' : 'Mode Sombre' }}">
+                                        <i class="fas fa-sun text-warning sun-icon"></i>
+                                        <i class="fas fa-moon text-info moon-icon" style="display: none;"></i>
+                                    </button>
+                                </div>
+
                                 <span class="me-3">{{ auth()->user()->name }}</span>
                                 <form method="POST" action="{{ route('logout') }}" class="d-inline">
                                     @csrf
@@ -407,6 +495,57 @@
         // Actualiser toutes les 30 secondes
         setInterval(loadNotificationCount, 30000);
         @endauth
+
+        // Gestion du thème
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const sunIcon = document.querySelector('.sun-icon');
+        const moonIcon = document.querySelector('.moon-icon');
+        const html = document.documentElement;
+        
+        function applyTheme(theme) {
+            html.setAttribute('data-bs-theme', theme);
+            
+            if (theme === 'dark') {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'inline';
+                themeToggleBtn.classList.remove('btn-light');
+                themeToggleBtn.classList.add('btn-dark');
+                themeToggleBtn.title = 'Mode Clair';
+            } else {
+                sunIcon.style.display = 'inline';
+                moonIcon.style.display = 'none';
+                themeToggleBtn.classList.add('btn-light');
+                themeToggleBtn.classList.remove('btn-dark');
+                themeToggleBtn.title = 'Mode Sombre';
+            }
+        }
+        
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const currentTheme = html.getAttribute('data-bs-theme') || 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                applyTheme(newTheme);
+                
+                // Sauvegarder la préférence en localStorage
+                localStorage.setItem('theme', newTheme);
+                
+                // Sauvegarder via AJAX
+                fetch('{{ route("set-theme") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ theme: newTheme })
+                });
+            });
+            
+            // Charger le thème sauvegardé au démarrage
+            const savedTheme = localStorage.getItem('theme') || '{{ session("theme", "light") }}';
+            applyTheme(savedTheme);
+        }
     </script>
     
     @stack('scripts')

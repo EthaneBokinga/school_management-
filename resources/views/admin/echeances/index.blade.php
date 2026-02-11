@@ -91,10 +91,25 @@
                                 </span>
                             </td>
                             <td>
-                                @if($echeance->statut !== 'Payé')
-                                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#payerModal{{ $echeance->id }}">
-                                    <i class="fas fa-money-bill"></i> Payer
-                                </button>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ route('admin.echeances.edit', $echeance->id) }}" class="btn btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    @if($echeance->statut !== 'Payé')
+                                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#payerModal{{ $echeance->id }}">
+                                        <i class="fas fa-money-bill"></i>
+                                    </button>
+                                    @else
+                                    <span class="text-success"><i class="fas fa-check-circle"></i></span>
+                                    @endif
+                                    <form action="{{ route('admin.echeances.destroy', $echeance->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
 
                                 <!-- Modal de paiement -->
                                 <div class="modal fade" id="payerModal{{ $echeance->id }}" tabindex="-1">
@@ -125,9 +140,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                @else
-                                <span class="text-success"><i class="fas fa-check-circle"></i> Payé</span>
-                                @endif
                             </td>
                         </tr>
                         @empty

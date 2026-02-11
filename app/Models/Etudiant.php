@@ -15,6 +15,7 @@ class Etudiant extends Model
         'prenom',
         'date_naissance',
         'sexe',
+        'email',
         'statut_actuel'
     ];
 
